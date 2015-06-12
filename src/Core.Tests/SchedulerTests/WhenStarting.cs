@@ -32,7 +32,6 @@ namespace ForgetMeNot.Core.Tests.SchedulerTests
             scheduler.Tell(new QueryMessage.HowBigIsYourQueue());
 
             ExpectMsg<QueryMessage.HowBigIsYourQueueResponse>(msg => msg.Size == 1);
-            
         }
     }
 }
