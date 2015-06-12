@@ -1,6 +1,4 @@
-﻿using ForgetMeNot.Router;
-
-namespace ForgetMeNot.Messages
+﻿namespace ForgetMeNot.Messages
 {
 	public static class SystemMessage
 	{

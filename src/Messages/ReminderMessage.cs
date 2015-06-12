@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using ForgetMeNot.Common;
-using ForgetMeNot.Router;
 
 namespace ForgetMeNot.Messages
 {
@@ -18,7 +17,7 @@ namespace ForgetMeNot.Messages
 			utf8
 		}
 
-		public interface IReminder : IMessage
+		public interface IReminder
 		{
 			Guid ReminderId { get; set; }
 		}
@@ -160,7 +159,7 @@ namespace ForgetMeNot.Messages
 			}
 		}
 
-		public class EqualityComparer<T> : IEqualityComparer<T> where T : IMessage
+		public class EqualityComparer<T> : IEqualityComparer<T>
 		{
 			private readonly Func<T, int> _getHashCode;
 			private readonly Func<T, T, bool> _equals;

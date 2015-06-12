@@ -1,11 +1,10 @@
 ﻿using ForgetMeNot.Common;
-using ForgetMeNot.Router;
 
 namespace ForgetMeNot.Messages
 {
 	public static class Envelopes
 	{
-		public class HttpDelivery<T> : IMessage where T : class, IMessage
+		public class HttpDelivery<T> where T: class 
 		{
 			public T Reminder { get; private set; }
 
@@ -16,7 +15,7 @@ namespace ForgetMeNot.Messages
 			}
 		}
 
-		public class RabbitMqDelivery<T> : IMessage where T : class, IMessage
+		public class RabbitMqDelivery<T> where T : class
 		{
 			public T Reminder { get; private set; }
 
@@ -27,7 +26,7 @@ namespace ForgetMeNot.Messages
 			}
 		}
 
-		public class Journaled<T> : IMessage where T : class, IMessage
+		public class Journaled<T> where T : class
 		{
 			private readonly T _inner;
 

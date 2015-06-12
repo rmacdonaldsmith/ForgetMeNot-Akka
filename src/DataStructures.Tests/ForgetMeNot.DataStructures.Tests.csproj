@@ -33,8 +33,11 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="log4net">
+      <HintPath>..\..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
+    </Reference>
     <Reference Include="nunit.framework">
-      <HintPath>..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
+      <HintPath>..\..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -58,9 +61,9 @@
       <Project>{B9E7FF0E-B1BD-4882-BF20-2DEA75248E47}</Project>
       <Name>ForgetMeNot.DataStructures</Name>
     </ProjectReference>
-    <ProjectReference Include="..\ReminderService.Router\ForgetMeNot.Router.csproj">
-      <Project>{B94EDE09-A3D0-4079-A938-2DD0FFFF546C}</Project>
-      <Name>ForgetMeNot.Router</Name>
+    <ProjectReference Include="..\Messages\ForgetMeNot.Messages.csproj">
+      <Project>{5F9F098A-A02A-40C3-9C99-15B50069B81C}</Project>
+      <Name>ForgetMeNot.Messages</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

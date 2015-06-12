@@ -48,8 +48,6 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Scheduler.cs" />
-    <Compile Include="Scheduler_old.cs" />
-    <Compile Include="SystemStartManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -1,21 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Reactive;
-using System.Reactive.Linq;
 using System.Runtime.Remoting.Messaging;
+using Akka.Actor;
 using ForgetMeNot.Common;
 using ForgetMeNot.Messages;
-using ForgetMeNot.Router;
-using log4net;
 
-namespace ForgetMeNot.Core.Startup
+namespace ForgetMeNot.Core
 {
 	public class SystemStartManager : ReceiveActor
 	{
 		private readonly List<ActorRef> _replayers;
 
-		public SystemStartManager (IEnumerable<ActorRef> replayers)
+		public SystemStartManager (IEnumerable<IActorRef> replayers)
 		{
 			Ensure.NotNull (replayers, "replayers");
 
