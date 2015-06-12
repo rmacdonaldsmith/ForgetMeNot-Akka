@@ -23,7 +23,7 @@ namespace ForgetMeNot.Core
                 {
                     _running = true;
                     SetTimer();
-                    Become(Running);
+                    BecomeStacked(Running);
                 });
         }
 
@@ -46,6 +46,8 @@ namespace ForgetMeNot.Core
 
             Receive<QueryMessage.HowBigIsYourQueue>(
                 query => Sender.Tell(new QueryMessage.HowBigIsYourQueueResponse(_pq.Size)));
+
+            Receive<SystemMessage.ShutDown>(shutDown => UnbecomeStacked());
         }
 
         private void SetTimer()

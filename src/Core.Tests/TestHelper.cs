@@ -19,5 +19,18 @@ namespace ForgetMeNot.Core.Tests
                 Encoding.UTF8.GetBytes("hello world"),
                 0);
         }
+
+        public static ReminderMessage.Schedule BuildMeAScheduleMessage(DateTime dueTime)
+        {
+            return new ReminderMessage.Schedule(
+                Guid.NewGuid(),
+                dueTime,
+                "http://delivery/url",
+                "application/json",
+                ReminderMessage.ContentEncodingEnum.utf8,
+                ReminderMessage.TransportEnum.http,
+                Encoding.UTF8.GetBytes("hello world"),
+                0);
+        }
     }
 }
