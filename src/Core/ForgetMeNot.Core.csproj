@@ -46,11 +46,27 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Class1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Scheduler.cs" />
+    <Compile Include="Scheduler_old.cs" />
+    <Compile Include="SystemStartManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Common\ForgetMeNot.Common.csproj">
+      <Project>{D2A0D6A8-7826-4687-AB47-0055D773286B}</Project>
+      <Name>ForgetMeNot.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DataStructures\ForgetMeNot.DataStructures.csproj">
+      <Project>{B9E7FF0E-B1BD-4882-BF20-2DEA75248E47}</Project>
+      <Name>ForgetMeNot.DataStructures</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Messages\ForgetMeNot.Messages.csproj">
+      <Project>{5F9F098A-A02A-40C3-9C99-15B50069B81C}</Project>
+      <Name>ForgetMeNot.Messages</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
