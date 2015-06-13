@@ -1,6 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ForgetMeNot.DataStructures", "src\DataStructures\ForgetMeNot.DataStructures.csproj", "{B9E7FF0E-B1BD-4882-BF20-2DEA75248E47}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ForgetMeNot.DataStructures.Tests", "src\DataStructures.Tests\ForgetMeNot.DataStructures.Tests.csproj", "{B20D7DDC-CC81-42C1-97D6-0A4A7AB54376}"
