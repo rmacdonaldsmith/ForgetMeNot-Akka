@@ -3,7 +3,7 @@ using ForgetMeNot.Common;
 using ForgetMeNot.DataStructures;
 using ForgetMeNot.Messages;
 
-namespace ForgetMeNot.Core
+namespace ForgetMeNot.Core.Schedule
 {
     public class Scheduler : ReceiveActor
     {
@@ -47,7 +47,7 @@ namespace ForgetMeNot.Core
             Receive<QueryMessage.HowBigIsYourQueue>(
                 query => Sender.Tell(new QueryMessage.HowBigIsYourQueueResponse(_pq.Size)));
 
-            Receive<SystemMessage.ShutDown>(shutDown => UnbecomeStacked());
+            Receive<SystemMessage.ShutDown>(shutDown => UnbecomeStacked()); //todo: stop sending check queue messages
         }
 
         private void SetTimer()

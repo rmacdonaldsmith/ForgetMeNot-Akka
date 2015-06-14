@@ -2,8 +2,10 @@
 using Akka.Actor;
 using Akka.TestKit.NUnit;
 using ForgetMeNot.Common;
+using ForgetMeNot.Core.Schedule;
 using ForgetMeNot.Messages;
 using NUnit.Framework;
+using FluentAssertions;
 
 namespace ForgetMeNot.Core.Tests.SchedulerTests
 {
@@ -22,15 +24,21 @@ namespace ForgetMeNot.Core.Tests.SchedulerTests
             scheduler.Tell(TestHelper.BuildMeAScheduleMessage(now));
             scheduler.Tell(TestHelper.BuildMeAScheduleMessage(now));
             scheduler.Tell(TestHelper.BuildMeAScheduleMessage(now));
+            scheduler.Tell(TestHelper.BuildMeAScheduleMessage(now + 4.Minutes()));
+            scheduler.Tell(TestHelper.BuildMeAScheduleMessage(now + 2.Hours()));
 
-            SystemTime.Set(now + TimeSpan.FromSeconds(1));
+            SystemTime.Set(now + 1.Seconds());
 
             scheduler.Tell(new Scheduler.Messages.CheckQueue());
 
             ExpectMsg<ReminderMessage.Due>();
             ExpectMsg<ReminderMessage.Due>();
             ExpectMsg<ReminderMessage.Due>();
-            ExpectMsg<ReminderMessage.Due>();            
+            ExpectMsg<ReminderMessage.Due>();      
+      
+            scheduler.Tell(new QueryMessage.HowBigIsYourQueue());
+
+            ExpectMsg<QueryMessage.HowBigIsYourQueueResponse>(query => query.Size.Should().Be(2));
         }
     }
 }

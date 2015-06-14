@@ -1,6 +1,7 @@
 using System;
 using Akka.Actor;
 using Akka.TestKit.NUnit;
+using ForgetMeNot.Core.Schedule;
 using ForgetMeNot.Messages;
 using NUnit.Framework;
 
