@@ -50,6 +50,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DeliverReminder\DeadLetterDelivery.cs" />
+    <Compile Include="DeliverReminder\DeliveryRouter.cs" />
+    <Compile Include="DeliverReminder\HTTPDelivery.cs" />
+    <Compile Include="DeliverReminder\IDeliverReminders.cs" />
+    <Compile Include="DeliverReminder\RabbitMqDelivery.cs" />
+    <Compile Include="DeliverReminder\UndeliveredProcessManager.cs" />
     <Compile Include="Journaler\ExtensionMethods.cs" />
     <Compile Include="Journaler\ICommandFactory.cs" />
     <Compile Include="Journaler\IJournalEvents.cs" />
@@ -76,6 +82,7 @@
       <Name>ForgetMeNot.Messages</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
