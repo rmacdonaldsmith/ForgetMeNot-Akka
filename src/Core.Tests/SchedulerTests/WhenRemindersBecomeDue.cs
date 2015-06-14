@@ -15,7 +15,7 @@ namespace ForgetMeNot.Core.Tests.SchedulerTests
         [Test]
         public void ThenDueMessagesAreSent()
         {
-            var now = SystemTime.FreezeTime();
+            var now = SystemTime.FreezeTime().ToUniversalTime();
             var schedulerProps = Props.Create(() => new Scheduler(10, TestActor));
             var scheduler = ActorOf(schedulerProps, "scheduler");
 
