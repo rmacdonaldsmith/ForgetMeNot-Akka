@@ -4,12 +4,12 @@ namespace ForgetMeNot.Common
 {
 	public static class TimeExtensions
 	{
+        /* These are already defined in the FluentAssertions assembly
 		public static TimeSpan Milliseconds(this int millis)
 		{
 			return TimeSpan.FromMilliseconds (millis);
 		}
-
-        /* These are already defined in the FluentAssertions assembly
+        
 		public static TimeSpan Seconds(this int seconds)
 		{
 			return TimeSpan.FromSeconds (seconds);

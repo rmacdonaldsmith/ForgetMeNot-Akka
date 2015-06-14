@@ -9,7 +9,6 @@ namespace ForgetMeNot.Core.Schedule
     {
         private readonly IActorRef _deliveryRouter;
         private readonly MinPriorityQueue<ReminderMessage.ISchedulable> _pq;
-        private bool _running;
 
         public Scheduler(int seedSize, IActorRef deliveryRouter)
         {
@@ -21,7 +20,6 @@ namespace ForgetMeNot.Core.Schedule
 
             Receive<SystemMessage.Start>(start =>
                 {
-                    _running = true;
                     SetTimer();
                     BecomeStacked(Running);
                 });
