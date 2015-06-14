@@ -33,12 +33,18 @@
     <Reference Include="Akka">
       <HintPath>..\..\packages\Akka.1.0.2\lib\net45\Akka.dll</HintPath>
     </Reference>
+    <Reference Include="log4net">
+      <HintPath>..\..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="Npgsql">
       <HintPath>..\..\packages\Npgsql.3.0.0-beta0001\lib\net45\Npgsql.dll</HintPath>
+    </Reference>
+    <Reference Include="RestSharp">
+      <HintPath>..\..\packages\RestSharp.105.1.0\lib\net45\RestSharp.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -53,8 +59,6 @@
     <Compile Include="DeliverReminder\DeadLetterDelivery.cs" />
     <Compile Include="DeliverReminder\DeliveryRouter.cs" />
     <Compile Include="DeliverReminder\HTTPDelivery.cs" />
-    <Compile Include="DeliverReminder\IDeliverReminders.cs" />
-    <Compile Include="DeliverReminder\RabbitMqDelivery.cs" />
     <Compile Include="DeliverReminder\UndeliveredProcessManager.cs" />
     <Compile Include="Journaler\ExtensionMethods.cs" />
     <Compile Include="Journaler\ICommandFactory.cs" />

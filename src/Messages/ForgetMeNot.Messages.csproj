@@ -34,11 +34,12 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DeliveryMessage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QueryMessage.cs" />
     <Compile Include="SystemMessage.cs" />
     <Compile Include="ReminderMessage.cs" />
-    <Compile Include="ReminderExtensions.cs" />
+    <Compile Include="MessageExtensions.cs" />
     <Compile Include="Envelopes.cs" />
     <Compile Include="MonitorMessage.cs" />
   </ItemGroup>

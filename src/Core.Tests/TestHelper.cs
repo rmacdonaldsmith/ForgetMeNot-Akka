@@ -32,5 +32,19 @@ namespace ForgetMeNot.Core.Tests
                 Encoding.UTF8.GetBytes("hello world"),
                 0);
         }
+
+        public static ReminderMessage.Schedule WithRetry(this ReminderMessage.Schedule schedule, int attempts, TimeSpan retryPeriod)
+        {
+            return new ReminderMessage.Schedule(
+                schedule.ReminderId,
+                schedule.DueAt,
+                schedule.DeliveryUrl,
+                schedule.ContentType,
+                schedule.ContentEncoding,
+                schedule.Transport,
+                schedule.Payload,
+                attempts,
+                schedule.DueAt + retryPeriod);
+        }
     }
 }

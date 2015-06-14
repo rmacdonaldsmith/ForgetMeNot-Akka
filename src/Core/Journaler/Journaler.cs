@@ -7,8 +7,8 @@ namespace ForgetMeNot.Core.Journaler
     public class Journaler : TypedActor,
                              IHandle<ReminderMessage.Schedule>,
                              IHandle<ReminderMessage.Cancel>,
-                             IHandle<ReminderMessage.Delivered>,
-                             IHandle<ReminderMessage.Undeliverable>
+                             IHandle<DeliveryMessage.Delivered>,
+                             IHandle<DeliveryMessage.Undeliverable>
     {
         private readonly IJournalEvents _journaler;
         private readonly IActorRef _scheduler;
@@ -32,12 +32,12 @@ namespace ForgetMeNot.Core.Journaler
             WriteToJournal(message);
         }
 
-        public void Handle(ReminderMessage.Delivered message)
+        public void Handle(DeliveryMessage.Delivered message)
         {
             WriteToJournal(message);
         }
 
-        public void Handle(ReminderMessage.Undeliverable message)
+        public void Handle(DeliveryMessage.Undeliverable message)
         {
             WriteToJournal(message);
         }

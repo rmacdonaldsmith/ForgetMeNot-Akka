@@ -1,20 +1,17 @@
 ﻿using System;
-using System.Linq;
+using FluentAssertions;
 using ForgetMeNot.Common;
 using ForgetMeNot.Core.DeliverReminder;
-using ForgetMeNot.Core.Tests.Helpers;
 using ForgetMeNot.Messages;
-using ForgetMeNot.Router;
-using ForgetMeNot.Test.Common;
 using NUnit.Framework;
 
 namespace ForgetMeNot.Core.Tests.DeliverReminder
 {
 	[TestFixture ()]
 	public class When_attempting_redelivery : 
-		RoutableTestBase, 
-		IConsume<ReminderMessage.Rescheduled>,
-		IConsume<ReminderMessage.Undeliverable>
+		RoutableTestBase,
+        IConsume<DeliveryMessage.Rescheduled>,
+        IConsume<DeliveryMessage.Undeliverable>
 	{
 
 		private UndeliveredProcessManager _processManager;
@@ -25,8 +22,8 @@ namespace ForgetMeNot.Core.Tests.DeliverReminder
 		public void Initialize()
 		{
 			_processManager = new UndeliveredProcessManager (Bus);
-			Subscribe<ReminderMessage.Rescheduled>(this);
-			Subscribe<ReminderMessage.Undeliverable> (this);
+            Subscribe<DeliveryMessage.Rescheduled>(this);
+            Subscribe<DeliveryMessage.Undeliverable>(this);
 			_originalReminder = MessageBuilders.BuildReminders (1, 3, SystemTime.UtcNow().Add(_durationToGiveup)).First ();
 		}
 
@@ -46,30 +43,30 @@ namespace ForgetMeNot.Core.Tests.DeliverReminder
 
 		private void When_receive_an_undelivered_reminder(ReminderMessage.Schedule reminder)
 		{
-			var undelivered = new ReminderMessage.Undelivered (reminder, "failed reason");
-			_processManager.Handle (undelivered);
+            var notDelivered = new DeliveryMessage.NotDelivered(reminder, "failed reason");
+			_processManager.Handle (notDelivered);
 		}
 
 		private void When_receive_a_Delivered_message(Guid reminderId)
 		{
-			var delivered = new ReminderMessage.Delivered (reminderId, SystemTime.UtcNow());
+            var delivered = new DeliveryMessage.Delivered(reminderId, SystemTime.UtcNow());
 			_processManager.Handle (delivered);
 		}
 
 		private void Should_emit_a_rescheduled_reminder_for_the_same_reminder(Guid reminderId)
 		{
 			var msg = Received[Received.Count -1];
-			Assert.IsInstanceOf<ReminderMessage.Rescheduled> (msg);
-			var received = (ReminderMessage.Rescheduled)msg;
+            Assert.IsInstanceOf<DeliveryMessage.Rescheduled>(msg);
+            var received = (DeliveryMessage.Rescheduled)msg;
 			Assert.AreEqual (received.ReminderId, reminderId);
 		}
 
-		public void Handle (ReminderMessage.Rescheduled msg)
+        public void Handle(DeliveryMessage.Rescheduled msg)
 		{
 			Received.Add (msg);
 		}
 
-		public void Handle (ReminderMessage.Undeliverable msg)
+        public void Handle(DeliveryMessage.Undeliverable msg)
 		{
 			Received.Add (msg);
 		}

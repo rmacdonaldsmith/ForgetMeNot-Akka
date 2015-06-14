@@ -48,10 +48,10 @@ namespace ForgetMeNot.Core.Journaler
 				    {
 				        {typeof (ReminderMessage.Cancel), WriteCancellationCommand},
 				        {typeof (ReminderMessage.Schedule), WriteScheduleCommand},
-				        {typeof (ReminderMessage.Delivered), WriteSentCommand},
-				        {typeof (ReminderMessage.Undeliverable), WriteUndeliverableCommand},
-				        {typeof (ReminderMessage.Undelivered), WriteUndeliveredCommand},
-				        {typeof (ReminderMessage.SentToDeadLetter), WriteSentToDeadLetterCommand}
+				        {typeof (DeliveryMessage.Delivered), WriteSentCommand},
+				        {typeof (DeliveryMessage.Undeliverable), WriteUndeliverableCommand},
+				        {typeof (DeliveryMessage.NotDelivered), WriteUndeliveredCommand},
+				        {typeof (DeliveryMessage.SentToDeadLetter), WriteSentToDeadLetterCommand}
 				    };
 			    return dic;
 			}
@@ -79,7 +79,7 @@ namespace ForgetMeNot.Core.Journaler
 		public Func<object, NpgsqlCommand> WriteSentCommand {
 			get { 
 				return message => {
-					var sent = message as ReminderMessage.Delivered;
+                    var sent = message as DeliveryMessage.Delivered;
 					return new NpgsqlCommand(
 						string.Format(WriteSentReminderCommandText, sent.SentStamp, sent.ReminderId)
 					);
@@ -90,7 +90,7 @@ namespace ForgetMeNot.Core.Journaler
 		public Func<object, NpgsqlCommand> WriteSentToDeadLetterCommand {
 			get { 
 				return message => {
-					var sent = message as ReminderMessage.SentToDeadLetter;
+                    var sent = message as DeliveryMessage.SentToDeadLetter;
 					return new NpgsqlCommand(
 						string.Format(WriteSentReminderCommandText, sent.SentStamp, sent.ReminderId)
 					);
@@ -101,7 +101,7 @@ namespace ForgetMeNot.Core.Journaler
 		public Func<object, NpgsqlCommand> WriteUndeliverableCommand {
 			get {
 				return message => {
-					var undeliverable = message as ReminderMessage.Undeliverable;
+                    var undeliverable = message as DeliveryMessage.Undeliverable;
 					return new NpgsqlCommand(
 						string.Format(WriteUndeliverableCommandText, undeliverable.ReminderId, undeliverable.Reason)
 					);
@@ -112,9 +112,9 @@ namespace ForgetMeNot.Core.Journaler
 		public Func<object, NpgsqlCommand> WriteUndeliveredCommand {
 			get {
 				return message => {
-					var undelivered = message as ReminderMessage.Undelivered;
+                    var notDelivered = message as DeliveryMessage.NotDelivered;
 					return new NpgsqlCommand(
-						string.Format(WriteUndeliveredCommandText, undelivered.ReminderId, undelivered.Reason)
+						string.Format(WriteUndeliveredCommandText, notDelivered.ReminderId, notDelivered.Reason)
 					);
 				};
 			}

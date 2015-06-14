@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using Akka.Actor;
 using ForgetMeNot.Common;
 using ForgetMeNot.Messages;
-using ForgetMeNot.Router;
 using log4net;
 
 namespace ForgetMeNot.Core.DeliverReminder
@@ -11,66 +9,71 @@ namespace ForgetMeNot.Core.DeliverReminder
 	public enum DeliveryTransport
 	{
 		None,
-		HTTP,
+		Http,
 		RabbitMq
 	}
 
-	public class DeliveryRouter : TypedActor
+	public class DeliveryRouter : TypedActor, 
+        IHandle<ReminderMessage.Due>,
+        IHandle<DeliveryMessage.Undeliverable>,
+        IHandle<DeliveryMessage.Rescheduled>
 	{
-		private readonly ILog Logger = LogManager.GetLogger(typeof(DeliveryRouter));
-		private readonly string _deadLetterUrl;
-		private readonly ISendMessages _bus;
+	    private readonly IActorRef _journaler;
+	    private readonly IActorRef _httpDelivery;
+	    private readonly IActorRef _deadletterDelivery;
+	    private readonly ILog Logger = LogManager.GetLogger(typeof(DeliveryRouter));
 
-		private readonly IDictionary<DeliveryTransport, IDeliverReminders> _handlers = new Dictionary<DeliveryTransport, IDeliverReminders> ();
-		private readonly IDictionary<ReminderMessage.TransportEnum, DeliveryTransport> _transportMap 
-			= new Dictionary<ReminderMessage.TransportEnum, DeliveryTransport>
-		{
-			{ ReminderMessage.TransportEnum.http, DeliveryTransport.HTTP },
-			{ ReminderMessage.TransportEnum.rabbitmq, DeliveryTransport.RabbitMq },
-		};
+	    public DeliveryRouter(IActorRef journaler,Props httpDeliveryProps, Props deadletterDeliveryProps)
+	    {
+            Ensure.NotNull(journaler, "journaler");
+	        Ensure.NotNull(httpDeliveryProps, "httpDeliveryProps");
+            Ensure.NotNull(deadletterDeliveryProps, "deadletterDeliveryProps");
 
-		public DeliveryRouter (ISendMessages bus, string deadLetterUrl)
-		{
-			Ensure.NotNull (bus, "bus");
-			Ensure.NotNullOrEmpty (deadLetterUrl, "deadLetterUrl");
+	        _journaler = journaler;
+            _httpDelivery = Context.ActorOf(httpDeliveryProps);
+	        _deadletterDelivery = Context.ActorOf(deadletterDeliveryProps);
+	    }
 
-			_bus = bus;
-			_deadLetterUrl = deadLetterUrl;
-		}
+	    public void Handle(ReminderMessage.Due due)
+	    {
+	        if (due.Reminder.Transport == ReminderMessage.TransportEnum.http)
+	            _httpDelivery.Tell(due);
+	        else
+	            Logger.ErrorFormatNoException(
+	                new {logname = "delivery", disposition = "undeliverable", reminderid = due.ReminderId},
+	                "There are no reminder delivery handlers registered for transport [{0}], delivery url [{1}]",
+	                due.Reminder.Transport, due.Reminder.DeliveryUrl);
+	    }
 
-		public void AddHandler(DeliveryTransport transport, IDeliverReminders handler)
-		{
-			if(!_handlers.ContainsKey(transport))
-				_handlers.Add(transport, handler);
-		}
+        public void Handle(DeliveryMessage.Undeliverable message)
+        {
+            _deadletterDelivery.Tell(message);
+        }
 
-		public void Handle(ReminderMessage.Due due)
-		{
-			if (!_transportMap.ContainsKey(due.Reminder.Transport) || !_handlers.ContainsKey(_transportMap[due.Reminder.Transport])) 
-			{
-				var exception = new NotSupportedException(string.Format("Delivery transport not supported for reminder [{0}]", due.ReminderId));
-				Logger.ErrorFormat(exception,
-					new { logname = "delivery", disposition = "undeliverable", reminderid = due.ReminderId },
-					"There are no reminder delivery handlers registered to deliver '{0}'", due.Reminder.DeliveryUrl);
-     				throw exception;
-			}
+	    public void Handle(DeliveryMessage.Rescheduled reschedule)
+	    {
+            _journaler.Tell(reschedule);
+	    }
 
-			var handler = _handlers[_transportMap[due.Reminder.Transport]];
-			handler.Send(due.Reminder, due.Reminder.DeliveryUrl, OnSuccessfulDelivery, OnFailedDelivery);
-		}
+	    protected override SupervisorStrategy SupervisorStrategy()
+	    {
+            //hmmm, this is looking awfully like the UndeliverableProcessManager
+	        return new OneForOneStrategy(
+	            maxNrOfRetries: 3,
+	            withinTimeMilliseconds: 1000,
+	            localOnlyDecider: exception => Directive.Restart, 
+	            loggingEnabled: true
+	            );
+	    }
 
-		private void OnSuccessfulDelivery(ReminderMessage.Schedule sentReminder)
-		{
-			Logger.InfoFormat (new { logname = "delivery", disposition = "delivered", reminderid =  sentReminder.ReminderId },
-				"Reminder [{0}] was successfully delivered.", sentReminder.ReminderId);
-			_bus.Send (new ReminderMessage.Delivered(sentReminder.ReminderId, SystemTime.UtcNow()));
-		}
-
-		private void OnFailedDelivery(ReminderMessage.Schedule failedReminder, string errorMessage)
-		{
-			Logger.ErrorFormatNoException(new { logname = "delivery", disposition = "undeliverable", reminderid =  failedReminder.ReminderId },
-				"Reminder [{0}] could not be delivered: {1}", failedReminder.ReminderId, errorMessage);
-			_bus.Send (new ReminderMessage.Undelivered(failedReminder, errorMessage));
-		}
+	    public static Func<IActorRef, Props, Props, Props> PropsFactory
+	    {
+            get
+            {
+                return
+                    (journaler, httpDeliveryProps, deadletterDeliveryProps) =>
+                    Props.Create(() => new DeliveryRouter(journaler, httpDeliveryProps, deadletterDeliveryProps));
+            }
+	    }
 	}
 }

@@ -33,5 +33,11 @@ namespace ForgetMeNot.Common
 			Set (Now ());
 			return Now ();
 		}
+
+        public static DateTime AdvanceTimeBy(TimeSpan period)
+        {
+            Set(Now() + period);
+            return Now();
+        }
     }
 }

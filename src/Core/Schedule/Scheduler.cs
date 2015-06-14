@@ -40,7 +40,7 @@ namespace ForgetMeNot.Core.Schedule
             Receive<ReminderMessage.Schedule>(schedule => _pq.Insert(schedule));
 
             //may not need this message type
-            Receive<ReminderMessage.Rescheduled>(reschedule => _pq.Insert(reschedule));
+            Receive<DeliveryMessage.Rescheduled>(reschedule => _pq.Insert(reschedule));
 
             Receive<QueryMessage.HowBigIsYourQueue>(
                 query => Sender.Tell(new QueryMessage.HowBigIsYourQueueResponse(_pq.Size)));

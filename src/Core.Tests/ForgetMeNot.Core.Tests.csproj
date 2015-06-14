@@ -52,6 +52,9 @@
     <Reference Include="nunit.framework">
       <HintPath>..\..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
     </Reference>
+    <Reference Include="RestSharp">
+      <HintPath>..\..\packages\RestSharp.105.1.0\lib\net45\RestSharp.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -61,9 +64,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DeliverReminder\When_attempting_redelivery.cs" />
-    <Compile Include="DeliverReminder\When_cannot_deliver.cs" />
-    <Compile Include="DeliverReminder\When_redelivery_should_not_be_attempted.cs" />
+    <Compile Include="DeliverReminder\WhenCannotDeliver.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SchedulerTests\WhenRemindersBecomeDue.cs" />
     <Compile Include="SchedulerTests\WhenStarting.cs" />

@@ -1,69 +1,72 @@
 ﻿using System;
 using System.Collections.Generic;
+using Akka.Actor;
 using ForgetMeNot.Common;
 using ForgetMeNot.Messages;
-using ForgetMeNot.Router;
 using log4net;
 
 namespace ForgetMeNot.Core.DeliverReminder
 {
-	public class UndeliveredProcessManager : 
-		IConsume<ReminderMessage.Undelivered>,
-		IConsume<ReminderMessage.Delivered>
+	public class UndeliveredProcessManager : TypedActor,
+		IHandle<DeliveryMessage.NotDelivered>,
+		IHandle<DeliveryMessage.Delivered>
 	{
-		private readonly ILog Logger = LogManager.GetLogger(typeof(UndeliveredProcessManager));
-		private readonly object _lockObject = new object ();
-		private readonly IBus _bus;
+		private static readonly ILog Logger = LogManager.GetLogger(typeof(UndeliveredProcessManager));
 		private readonly Dictionary<Guid, int> _retryAttempts = new Dictionary<Guid, int> ();
+	    private readonly IActorRef _deliveryRouter;
 
-		public UndeliveredProcessManager (IBus bus)
+        public UndeliveredProcessManager(IActorRef deliveryRouter)
 		{
-			Ensure.NotNull (bus, "bus");
+            Ensure.NotNull(deliveryRouter, "deliveryRouter");
 
-			_bus = bus;
+            _deliveryRouter = deliveryRouter;
 		}
 
-		public void Handle (ReminderMessage.Delivered delivered)
+		public void Handle (DeliveryMessage.Delivered delivered)
 		{
-			lock (_lockObject) {
-				if (_retryAttempts.ContainsKey (delivered.ReminderId)) {
-					_retryAttempts.Remove (delivered.ReminderId);
-					Logger.InfoFormat(new { logname = "delivery", disposition = "delivered", reminderid = delivered.ReminderId },
-						"Reminder [{0}] was delivered, removing from cache.", delivered.ReminderId);
-				}
-			}
+		    if (_retryAttempts.ContainsKey(delivered.ReminderId))
+		    {
+		        _retryAttempts.Remove(delivered.ReminderId);
+		        Logger.InfoFormat(new {logname = "delivery", disposition = "delivered", reminderid = delivered.ReminderId},
+		                          "Reminder [{0}] was delivered, removing from cache.", delivered.ReminderId);
+		    }
 		}
 
-		public void Handle (ReminderMessage.Undelivered undelivered)
+		public void Handle (DeliveryMessage.NotDelivered notDelivered)
 		{
-			Logger.InfoFormat ("Reminder [{0}] was undelivered...", undelivered.ReminderId);
-			if (undelivered.DoNotAttemptRedelivery ()) {
-				Logger.ErrorFormatNoException(new { logname = "delivery", disposition = "undeliverable", reminderid = undelivered.ReminderId },
-					"Reminder [{0}] should not attempt redelivery; sending Undeliverable.", undelivered.ReminderId);
-				_bus.Send (new ReminderMessage.Undeliverable (undelivered.Reminder, undelivered.Reason));
+			Logger.InfoFormat ("Reminder [{0}] was undelivered...", notDelivered.ReminderId);
+			if (notDelivered.DoNotAttemptRedelivery ()) {
+				Logger.ErrorFormatNoException(new { logname = "delivery", disposition = "undeliverable", reminderid = notDelivered.ReminderId },
+					"Reminder [{0}] should not attempt redelivery; sending Undeliverable.", notDelivered.ReminderId);
+				_deliveryRouter.Tell(new DeliveryMessage.Undeliverable (notDelivered.Reminder, notDelivered.Reason));
 				return;
 			}
 
-			lock (_lockObject) {
-				if (!_retryAttempts.ContainsKey (undelivered.ReminderId))
-					_retryAttempts.Add (undelivered.ReminderId, 1);
-				else
-					_retryAttempts [undelivered.ReminderId]++;
+		    if (!_retryAttempts.ContainsKey(notDelivered.ReminderId))
+		        _retryAttempts.Add(notDelivered.ReminderId, 1);
+		    else
+		        _retryAttempts[notDelivered.ReminderId]++;
 
-				var retryAttempts = _retryAttempts [undelivered.ReminderId];
-				var nextDueTime = CalculateNextDueTime (undelivered.Reminder, retryAttempts);
-				var rescheduled = new ReminderMessage.Rescheduled (undelivered.Reminder, nextDueTime);
+		    var retryAttempts = _retryAttempts[notDelivered.ReminderId];
+		    var nextDueTime = CalculateNextDueTime(notDelivered.Reminder, retryAttempts);
+		    var rescheduled = new DeliveryMessage.Rescheduled(notDelivered.Reminder, nextDueTime);
 
-				if (GiveupRedelivering (rescheduled, retryAttempts)) {
-					Logger.ErrorFormatNoException(new { logname = "delivery", disposition = "undeliverable", reminderid = undelivered.ReminderId },
-						"Reminder [{0}] giving-up redelivery after [{1}] attempts; sending Undeliverable.", undelivered.ReminderId, retryAttempts);
-					_bus.Send (new ReminderMessage.Undeliverable (undelivered.Reminder, undelivered.Reason));
-				} else {
-					Logger.InfoFormat(new { logname = "delivery", disposition = "retrying", reminderid = undelivered.ReminderId },
-						"Reminder [{0}]: rescheduling delivery for [{1}].", undelivered.ReminderId, rescheduled.DueAt);
-					_bus.Send (rescheduled);
-				}
-			}
+		    if (GiveupRedelivering(rescheduled, retryAttempts))
+		    {
+		        Logger.ErrorFormatNoException(
+		            new {logname = "delivery", disposition = "undeliverable", reminderid = notDelivered.ReminderId},
+		            "Reminder [{0}] giving-up redelivery after [{1}] attempts; sending Undeliverable.",
+		            notDelivered.ReminderId, retryAttempts);
+                _deliveryRouter.Tell(new DeliveryMessage.Undeliverable(notDelivered.Reminder, notDelivered.Reason));
+		    }
+		    else
+		    {
+		        Logger.InfoFormat(new {logname = "delivery", disposition = "retrying", reminderid = notDelivered.ReminderId},
+		                          "Reminder [{0}]: rescheduling delivery for [{1}].", notDelivered.ReminderId,
+		                          rescheduled.DueAt);
+                _deliveryRouter.Tell(rescheduled);
+		    }
+
 		}
 			
 		private DateTime CalculateNextDueTime(ReminderMessage.Schedule reminder, int retryCount)
@@ -76,9 +79,14 @@ namespace ForgetMeNot.Core.DeliverReminder
 			return (long)( (reminder.GiveupAfter.Value.Ticks - reminder.DueAt.Ticks) / (reminder.MaxRetries * reminder.MaxRetries * reminder.MaxRetries) );
 		}
 
-		private bool GiveupRedelivering(ReminderMessage.Rescheduled rescheduled, int retryAttempts)
+		private bool GiveupRedelivering(DeliveryMessage.Rescheduled rescheduled, int retryAttempts)
 		{
 			return retryAttempts > rescheduled.Reminder.MaxRetries;
 		}
+
+	    public static Func<IActorRef, Props> ActorProps
+	    {
+	        get { return deliveryRouter => Props.Create(() => new UndeliveredProcessManager(deliveryRouter)); }
+	    }
 	}
 }

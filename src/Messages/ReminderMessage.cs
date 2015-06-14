@@ -34,7 +34,7 @@ namespace ForgetMeNot.Messages
 			DateTime DueAt { get; set; }
 		}
 
-		public class Schedule : ISchedulable, IDeliverable, IReminder
+		public class Schedule : ISchedulable, IDeliverable
 		{
 			public Guid ReminderId { get; set; }
 			public DateTime DueAt { get; set; }
@@ -91,71 +91,6 @@ namespace ForgetMeNot.Messages
 			public Cancel (Guid reminderId)
 			{
 				ReminderId = reminderId;
-			}
-		}
-
-		public class Delivered : IReminder
-		{
-			public Guid ReminderId { get; set; }
-			public DateTime SentStamp { get; private set; }
-
-			public Delivered (Guid reminderId, DateTime sentStamp)
-			{
-				Ensure.NotEmptyGuid(reminderId, "reminderId");
-
-				ReminderId = reminderId;
-				SentStamp = sentStamp;
-			}
-		}
-
-		public class Undeliverable : IReminder
-		{
-			public Guid ReminderId { get; set; }
-			public ReminderMessage.Schedule Reminder { get; set; }
-			public string Reason { get; set; }
-
-			public Undeliverable (ReminderMessage.Schedule reminder, string reason)
-			{
-				Reminder = reminder;
-				Reason = reason;
-				ReminderId = reminder.ReminderId;
-			}
-		}
-
-		public class Rescheduled : ISchedulable
-		{
-			public ReminderMessage.Schedule Reminder { get; set; }
-			public DateTime DueAt { get; set; }
-			public Guid ReminderId { get; set; }
-
-			public Rescheduled (ReminderMessage.Schedule original, DateTime rescheduledFor)
-			{
-				Reminder = original;
-				DueAt = rescheduledFor;
-				ReminderId = Reminder.ReminderId;
-			}
-		}
-
-		public class SentToDeadLetter : Delivered
-		{
-			public SentToDeadLetter (Guid reminderId, DateTime sentStamp) 
-				: base (reminderId, sentStamp)
-			{
-				//empty	
-			}
-		}
-
-		public class Undelivered : IReminder
-		{
-			public Guid ReminderId { get; set; }
-			public ReminderMessage.Schedule Reminder { get; set; }
-			public string Reason { get; set; }
-
-			public Undelivered (ReminderMessage.Schedule reminder, string reason)
-			{
-				ReminderId = reminder.ReminderId;
-				Reminder = reminder;
-				Reason = reason;
 			}
 		}
 
