@@ -8,7 +8,7 @@ using NUnit.Framework;
 
 namespace ForgetMeNot.Core.Tests.DeliverReminder
 {
-    public class WhenCannotDeliver : TestKit
+    public class ReDelivery : TestKit
     {
         [Test]
         public void WhenRedeliveryShouldNotBeAttempted()
@@ -20,7 +20,7 @@ namespace ForgetMeNot.Core.Tests.DeliverReminder
             var reminderMessage = TestHelper.BuildMeAScheduleMessage(now);
             undeliveredProcessManager.Tell(new DeliveryMessage.NotDelivered(reminderMessage, "a reason"));
 
-            ExpectMsg<DeliveryMessage.Undeliverable>();
+            ExpectMsg<DeliveryMessage.Undeliverable>(msg => msg.ReminderId == reminderMessage.ReminderId);
         }
 
         [Test]
@@ -43,10 +43,15 @@ namespace ForgetMeNot.Core.Tests.DeliverReminder
             ExpectMsg<DeliveryMessage.Rescheduled>();
             undeliveredProcessManager.Tell(notDelivered);
             ExpectMsg<DeliveryMessage.Rescheduled>(reschedule =>
-                                                   Assert.That(reschedule.DueAt,
-                                                               Is.InRange(now + 9.Minutes(), now + 10.Minutes())));
+                {
+                    Assert.That(reschedule.DueAt,
+                                Is.InRange(now + 9.Minutes(), now + 10.Minutes()));
+                    Assert.That(reschedule.ReminderId == reminderMessage.ReminderId);
+                });
+
+            
             undeliveredProcessManager.Tell(notDelivered);
-            ExpectMsg<DeliveryMessage.Undeliverable>();
+            ExpectMsg<DeliveryMessage.Undeliverable>(msg => msg.ReminderId == reminderMessage.ReminderId);
         }
 
         [Test]
