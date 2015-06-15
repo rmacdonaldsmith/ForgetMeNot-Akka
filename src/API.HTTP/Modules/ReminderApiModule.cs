@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Linq;
+using Akka.Actor;
 using ForgetMeNot.API.HTTP.ErrorHandling;
 using ForgetMeNot.API.HTTP.BootStrap;
 using ForgetMeNot.API.HTTP.Models;
 using ForgetMeNot.Messages;
-using ForgetMeNot.Router;
 using log4net;
 using Nancy;
 using Nancy.ModelBinding;
@@ -12,18 +12,16 @@ using Nancy.Validation;
 
 namespace ForgetMeNot.API.HTTP.Modules
 {
-	public class ReminderApiModule : NancyModule, IConsume<SystemMessage.InitializationCompleted>
+	public class ReminderApiModule : NancyModule
 	{
-		private static readonly ILog Logger = LogManager.GetLogger("ReminderService.API.HTTP.ReminderApiModule");
-
-		private readonly IBus _bus;
-		private bool _systemHasInitialized = false;
+	    private readonly ActorSystem _actorSystem;
+	    private static readonly ILog Logger = LogManager.GetLogger("ReminderService.API.HTTP.ReminderApiModule");
 
 		//todo: look at making the actions Async operations
-		public ReminderApiModule (IBus bus) 
+		public ReminderApiModule (ActorSystem actorSystem) 
 			: base("/v1/reminders")
 		{
-			_bus = bus;
+		    _actorSystem = actorSystem;
 
 			// Get the current state of a reminder by id
 			Get ["/{reminderId}"] = SafeHandler(HandleGetReminderRequest);

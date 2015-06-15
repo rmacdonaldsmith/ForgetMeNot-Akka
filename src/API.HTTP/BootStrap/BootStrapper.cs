@@ -23,6 +23,35 @@ namespace ForgetMeNot.API.HTTP.BootStrap
 			_serviceInstanceId = serviceInstanceId;
 		}
 
+        protected override void ConfigureApplicationContainer(Castle.Windsor.IWindsorContainer existingContainer)
+        {
+            base.ConfigureApplicationContainer(existingContainer);
+
+            Logger.Info("Configuring the Nancy HTTP API...");
+
+            existingContainer.Register(Component.For<JsonSerializer>().ImplementedBy<CustomJsonSerializer>());
+
+            var hitTracker = new HitTracker(HitTrackerSettings.Instance);
+            existingContainer.Register(Component.For<HitTracker>().Instance(hitTracker));
+
+            var system = ActorSystem.Create("forgetmenot-system");
+            //hmmm, not sure what i can do with this
+            var propsResolver = new WindsorDependencyResolver(existingContainer, system);
+            existingContainer.Register(Component.For<ActorSystem>().Instance(system));
+
+            Logger.Info("Done configuring the Nancy Http API");
+        }
+
+        protected override void ApplicationStartup(Castle.Windsor.IWindsorContainer container, Nancy.Bootstrapper.IPipelines pipelines)
+        {
+            //call base startup first, then add your additional startup stuff on top
+            base.ApplicationStartup(container, pipelines);
+
+            //initialize the forgetmenot system here
+            //var startupManager = container.Resolve<ActorSystem>().ActorOf(container.Resolve<StarupActor>());
+            //startupManager.Tell(new SystemMessage.BeginInitialization());
+        }
+
         protected override void RequestStartup(Castle.Windsor.IWindsorContainer container, Nancy.Bootstrapper.IPipelines pipelines, NancyContext context)
         {
             pipelines.BeforeRequest.AddItemToStartOfPipeline(RequestProcessing.PreProcessing);
@@ -32,30 +61,6 @@ namespace ForgetMeNot.API.HTTP.BootStrap
             pipelines.AfterRequest.AddItemToEndOfPipeline(RequestProcessing.PostProcessing);
 
             base.RequestStartup(container, pipelines, context);
-        }
-
-        protected override void ConfigureApplicationContainer(Castle.Windsor.IWindsorContainer existingContainer)
-        {
-            base.ConfigureApplicationContainer(existingContainer);
-
-            Logger.Info("Configuring the Nancy HTTP API...");
-
-            var customJsonSerializer = new ComponentRegistration<JsonSerializer>()
-                .ImplementedBy<CustomJsonSerializer>();
-
-            var hitTracker = new HitTracker(HitTrackerSettings.Instance);
-            var hitTrackerRegistration = new ComponentRegistration<HitTracker>().Instance(hitTracker);
-
-
-            var system = ActorSystem.Create("forgetmenot-system");
-            var propsResolver = new WindsorDependencyResolver(existingContainer, system);
-
-            existingContainer.Register(
-                customJsonSerializer,
-                hitTrackerRegistration
-                );
-
-            Logger.Info("Done configuring the Nancy Http API");
         }
 	}
 }
