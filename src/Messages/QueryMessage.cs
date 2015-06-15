@@ -15,5 +15,18 @@
                 Size = size;
             }
         }
+
+        public class HowManyUndeliveredRemindersDoYouHave
+        {}
+
+        public class HowManyUndeliveredRemindersDoYouHaveResponse
+        {
+            public int Count { get; private set; }
+
+            public HowManyUndeliveredRemindersDoYouHaveResponse(int count)
+            {
+                Count = count;
+            }
+        }
     }
 }

@@ -9,7 +9,8 @@ namespace ForgetMeNot.Core.DeliverReminder
 {
 	public class UndeliveredProcessManager : TypedActor,
 		IHandle<DeliveryMessage.NotDelivered>,
-		IHandle<DeliveryMessage.Delivered>
+		IHandle<DeliveryMessage.Delivered>,
+        IHandle<QueryMessage.HowManyUndeliveredRemindersDoYouHave>
 	{
 		private static readonly ILog Logger = LogManager.GetLogger(typeof(UndeliveredProcessManager));
 		private readonly Dictionary<Guid, int> _retryAttempts = new Dictionary<Guid, int> ();
@@ -68,7 +69,12 @@ namespace ForgetMeNot.Core.DeliverReminder
 		    }
 
 		}
-			
+
+        public void Handle(QueryMessage.HowManyUndeliveredRemindersDoYouHave message)
+        {
+            Sender.Tell(new QueryMessage.HowManyUndeliveredRemindersDoYouHaveResponse(_retryAttempts.Count));
+        }
+
 		private DateTime CalculateNextDueTime(ReminderMessage.Schedule reminder, int retryCount)
 		{
 			return reminder.DueAt.AddTicks (DecelerationFactor (reminder) * retryCount * retryCount * retryCount);

@@ -48,6 +48,28 @@ namespace ForgetMeNot.Core.Tests.DeliverReminder
             undeliveredProcessManager.Tell(notDelivered);
             ExpectMsg<DeliveryMessage.Undeliverable>();
         }
+
+        [Test]
+        public void WhenRetryingAndSucceed()
+        {
+            var now = SystemTime.FreezeTime();
+            var undeliveredProcessManager = ActorOf(Props.Create(() => new UndeliveredProcessManager(TestActor)),
+                                                    "undelivered-process-manager-3");
+
+            var reminderMessage = TestHelper
+                .BuildMeAScheduleMessage(now)
+                .WithRetry(
+                    attempts: 3,
+                    retryPeriod: 10.Minutes());
+            var notDelivered = new DeliveryMessage.NotDelivered(reminderMessage, "a reason");
+
+            undeliveredProcessManager.Tell(notDelivered);
+            ExpectMsg<DeliveryMessage.Rescheduled>();
+            undeliveredProcessManager.Tell(new DeliveryMessage.Delivered(reminderMessage.ReminderId, now));
+            ExpectNoMsg();
+            undeliveredProcessManager.Tell(new QueryMessage.HowManyUndeliveredRemindersDoYouHave());
+            ExpectMsg<QueryMessage.HowManyUndeliveredRemindersDoYouHaveResponse>(resp => resp.Count == 0);
+        }
     }
 
     /*
