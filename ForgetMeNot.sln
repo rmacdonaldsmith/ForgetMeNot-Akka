@@ -1,8 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
-MinimumVisualStudioVersion = 10.0.40219.1
+# Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ForgetMeNot.DataStructures", "src\DataStructures\ForgetMeNot.DataStructures.csproj", "{B9E7FF0E-B1BD-4882-BF20-2DEA75248E47}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ForgetMeNot.DataStructures.Tests", "src\DataStructures.Tests\ForgetMeNot.DataStructures.Tests.csproj", "{B20D7DDC-CC81-42C1-97D6-0A4A7AB54376}"
@@ -14,6 +12,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ForgetMeNot.Core.Tests", "src\Core.Tests\ForgetMeNot.Core.Tests.csproj", "{D56953EB-1CAE-4135-83BB-F9BAF244C1E1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ForgetMeNot.Messages", "src\Messages\ForgetMeNot.Messages.csproj", "{5F9F098A-A02A-40C3-9C99-15B50069B81C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ForgetMeNot.API.HTTP", "src\API.HTTP\ForgetMeNot.API.HTTP.csproj", "{595454FF-7511-4E5B-A8C7-E72A17B8FCDA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +45,10 @@ Global
 		{5F9F098A-A02A-40C3-9C99-15B50069B81C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5F9F098A-A02A-40C3-9C99-15B50069B81C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5F9F098A-A02A-40C3-9C99-15B50069B81C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{595454FF-7511-4E5B-A8C7-E72A17B8FCDA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{595454FF-7511-4E5B-A8C7-E72A17B8FCDA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{595454FF-7511-4E5B-A8C7-E72A17B8FCDA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{595454FF-7511-4E5B-A8C7-E72A17B8FCDA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

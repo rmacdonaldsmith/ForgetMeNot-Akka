@@ -1,0 +1,132 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{595454FF-7511-4E5B-A8C7-E72A17B8FCDA}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>ForgetMeNot.API.HTTP</RootNamespace>
+    <AssemblyName>ForgetMeNot.API.HTTP</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>full</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Nancy.Validation.FluentValidation">
+      <HintPath>..\packages\Nancy.Validation.FluentValidation.0.23.2\lib\net40\Nancy.Validation.FluentValidation.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\packages\Newtonsoft.Json.6.0.5\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="log4net">
+      <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="FluentValidation">
+      <HintPath>..\packages\FluentValidation.5.4.0.0\lib\Net40\FluentValidation.dll</HintPath>
+    </Reference>
+    <Reference Include="Nancy">
+      <HintPath>..\packages\Nancy.0.23.2\lib\net40\Nancy.dll</HintPath>
+    </Reference>
+    <Reference Include="Nancy.Serialization.JsonNet">
+      <HintPath>..\packages\Nancy.Serialization.JsonNet.0.23.2\lib\net40\Nancy.Serialization.JsonNet.dll</HintPath>
+    </Reference>
+    <Reference Include="RestSharp">
+      <HintPath>..\packages\RestSharp.104.4.0\lib\net4\RestSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="NodaTime">
+      <HintPath>..\packages\NodaTime.1.3.0\lib\net35-Client\NodaTime.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Reactive.Interfaces">
+      <HintPath>..\packages\Rx-Interfaces.2.2.5\lib\net45\System.Reactive.Interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive.Core">
+      <HintPath>..\packages\Rx-Core.2.2.5\lib\net45\System.Reactive.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive.Linq">
+      <HintPath>..\packages\Rx-Linq.2.2.5\lib\net45\System.Reactive.Linq.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Security">
+      <HintPath>..\packages\Npgsql.2.1.3\lib\net45\Mono.Security.dll</HintPath>
+    </Reference>
+    <Reference Include="Npgsql">
+      <HintPath>..\packages\Npgsql.2.1.3\lib\net45\Npgsql.dll</HintPath>
+    </Reference>
+    <Reference Include="OpenTable.Services.Components.Common">
+      <HintPath>..\packages\OpenTable.Services.Components.Common.1.0.44\lib\net40\OpenTable.Services.Components.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="OpenTable.Services.Components.Monitoring">
+      <HintPath>..\packages\OpenTable.Services.Components.Monitoring.2.0.9\lib\net40\OpenTable.Services.Components.Monitoring.dll</HintPath>
+    </Reference>
+    <Reference Include="OpenTable.Services.Components.RabbitMq">
+      <HintPath>..\packages\OpenTable.Services.Components.RabbitMq.1.0.11\lib\net40\OpenTable.Services.Components.RabbitMq.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Validation\ScheduleReminderRequestValidator.cs" />
+    <Compile Include="ErrorHandling\ErrorResponse.cs" />
+    <Compile Include="BootStrap\BootStrapper.cs" />
+    <Compile Include="Validation\IsValidJsonValidator.cs" />
+    <Compile Include="Validation\Extensions.cs" />
+    <Compile Include="CustomSerializers\CustomJsonSerializer.cs" />
+    <Compile Include="CustomSerializers\ByteArrayConverter.cs" />
+    <Compile Include="Models\ScheduledResponse.cs" />
+    <Compile Include="Models\ScheduleReminder.cs" />
+    <Compile Include="Models\ExtensionMethods.cs" />
+    <Compile Include="Modules\ReminderApiModule.cs" />
+    <Compile Include="Modules\RootModule.cs" />
+    <Compile Include="Modules\ServiceMonitoringModule.cs" />
+    <Compile Include="Models\ServiceMonitoring.cs" />
+    <Compile Include="Monitoring\ObservableMonitor.cs" />
+    <Compile Include="Monitoring\MonitorEvent.cs" />
+    <Compile Include="Monitoring\HttpApiMonitor.cs" />
+    <Compile Include="Monitoring\RequestResponseTimer.cs" />
+    <Compile Include="Monitoring\IMediateEvents.cs" />
+    <Compile Include="Monitoring\MonitoringMediator.cs" />
+    <Compile Include="Monitoring\IPushEvents.cs" />
+    <Compile Include="Monitoring\MonitorFactory.cs" />
+    <Compile Include="Modules\HealthModule.cs" />
+    <Compile Include="BootStrap\RequestProcessing.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <ProjectReference Include="..\Messages\ForgetMeNot.Messages.csproj">
+      <Project>{5F9F098A-A02A-40C3-9C99-15B50069B81C}</Project>
+      <Name>ForgetMeNot.Messages</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Common\ForgetMeNot.Common.csproj">
+      <Project>{D2A0D6A8-7826-4687-AB47-0055D773286B}</Project>
+      <Name>ForgetMeNot.Common</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup />
+</Project>
