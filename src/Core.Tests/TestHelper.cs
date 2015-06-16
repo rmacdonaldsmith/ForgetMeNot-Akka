@@ -44,7 +44,23 @@ namespace ForgetMeNot.Core.Tests
                 schedule.Transport,
                 schedule.Payload,
                 attempts,
-                schedule.DueAt + retryPeriod);
+                schedule.DueAt + retryPeriod,
+                schedule.Tag);
+        }
+
+        public static ReminderMessage.Schedule WithIdentity(this ReminderMessage.Schedule schedule, Guid reminderId)
+        {
+            return new ReminderMessage.Schedule(
+                reminderId,
+                schedule.DueAt,
+                schedule.DeliveryUrl,
+                schedule.ContentType,
+                schedule.ContentEncoding,
+                schedule.Transport,
+                schedule.Payload,
+                schedule.MaxRetries,
+                schedule.DueAt,
+                schedule.Tag);
         }
     }
 }

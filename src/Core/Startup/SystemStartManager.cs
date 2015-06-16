@@ -1,24 +1,29 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Remoting.Messaging;
+using System.Reactive;
+using System.Reactive.Linq;
 using Akka.Actor;
 using ForgetMeNot.Common;
 using ForgetMeNot.Messages;
+using ForgetMeNot.Router;
+using log4net;
 
-namespace ForgetMeNot.Core
+namespace ForgetMeNot.Core.Startup
 {
-	public class SystemStartManager : ReceiveActor
+	public class SystemStartManager : TypedActor, IHandle<SystemMessage.BeginInitialization>
 	{
-		private readonly List<ActorRef> _replayers;
+		private readonly static ILog Logger = LogManager.GetLogger(typeof(SystemStartManager));
+		private readonly List<IReplayEvents> _replayers;
 
-		public SystemStartManager (IEnumerable<IActorRef> replayers)
+		public SystemStartManager (IEnumerable<IReplayEvents> replayers)
 		{
 			Ensure.NotNull (replayers, "replayers");
 
 			_replayers = new List<IReplayEvents> (replayers);
 		}
 
-		public void Receive (SystemMessage.Start start)
+		public void Handle (SystemMessage.BeginInitialization init)
 		{
 			// Merge the observable sequences from all the replayers in to one stream
 			// Play that stream over the bus to initialize components
