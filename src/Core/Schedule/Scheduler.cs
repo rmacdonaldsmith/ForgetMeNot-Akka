@@ -1,4 +1,5 @@
-﻿using Akka.Actor;
+﻿using System;
+using Akka.Actor;
 using ForgetMeNot.Common;
 using ForgetMeNot.DataStructures;
 using ForgetMeNot.Messages;
@@ -14,7 +15,7 @@ namespace ForgetMeNot.Core.Schedule
         {
             Ensure.Nonnegative(seedSize, "seedSize");
             Ensure.NotNull(deliveryRouter, "deliveryRouter");
-
+            
             _deliveryRouter = deliveryRouter;
             _pq = new MinPriorityQueue<ReminderMessage.ISchedulable>(seedSize, (a, b) => a.DueAt > b.DueAt);
 
@@ -51,6 +52,16 @@ namespace ForgetMeNot.Core.Schedule
         private void SetTimer()
         {
             Context.System.Scheduler.ScheduleTellRepeatedly(1000, 1000, Self, new Messages.CheckQueue(), Self);
+        }
+
+        public static Func<int, IActorRef, Props> ActorProps
+        {
+            get
+            {
+                return
+                    (seed, deliveryActor) =>
+                    Props.Create(() => new Scheduler(seed, deliveryActor)).WithMailbox("scheduler-mailbox");
+            }
         }
 
         public class Messages

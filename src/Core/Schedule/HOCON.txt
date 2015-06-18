@@ -1,0 +1,3 @@
+﻿scheduler-mailbox {
+ mailbox-type: "ForgetMeNot.Core.Schedule.SchedulerMailbox,ForgetMeNot.Core"
+}

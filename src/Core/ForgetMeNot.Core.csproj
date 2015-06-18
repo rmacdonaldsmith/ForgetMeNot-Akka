@@ -69,6 +69,7 @@
     <Compile Include="Journaler\PostgresJournaler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Schedule\Scheduler.cs" />
+    <Compile Include="Schedule\SchedulerMailbox.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -89,6 +90,9 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Startup\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Schedule\HOCON.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
