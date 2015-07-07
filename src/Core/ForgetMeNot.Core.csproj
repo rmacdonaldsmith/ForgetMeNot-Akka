@@ -88,6 +88,7 @@
     <Compile Include="Startup\CurrentRemindersReplayer.cs" />
     <Compile Include="Startup\SystemStartManager.cs" />
     <Compile Include="Startup\UndeliveredRemindersReplayer.cs" />
+    <Compile Include="Schedule\SchedulerMailbox.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -107,7 +108,12 @@
       <Name>ForgetMeNot.Messages</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Startup\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Schedule\HOCON.txt" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
