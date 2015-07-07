@@ -40,6 +40,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="NodaTime">
+      <HintPath>..\..\packages\NodaTime.1.3.0\lib\net35-Client\NodaTime.dll</HintPath>
+    </Reference>
     <Reference Include="Npgsql">
       <HintPath>..\..\packages\Npgsql.3.0.0-beta0001\lib\net45\Npgsql.dll</HintPath>
     </Reference>
@@ -48,6 +51,18 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Reactive.Core">
+      <HintPath>..\..\packages\Rx-Core.2.2.5\lib\net45\System.Reactive.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive.Interfaces">
+      <HintPath>..\..\packages\Rx-Interfaces.2.2.5\lib\net45\System.Reactive.Interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive.Linq">
+      <HintPath>..\..\packages\Rx-Linq.2.2.5\lib\net45\System.Reactive.Linq.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive.PlatformServices">
+      <HintPath>..\..\packages\Rx-PlatformServices.2.2.5\lib\net45\System.Reactive.PlatformServices.dll</HintPath>
+    </Reference>
     <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -69,8 +84,13 @@
     <Compile Include="Journaler\PostgresJournaler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Schedule\Scheduler.cs" />
+    <Compile Include="Startup\CancellationReplayer.cs" />
+    <Compile Include="Startup\CurrentRemindersReplayer.cs" />
+    <Compile Include="Startup\SystemStartManager.cs" />
+    <Compile Include="Startup\UndeliveredRemindersReplayer.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -87,9 +107,7 @@
       <Name>ForgetMeNot.Messages</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Startup\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
