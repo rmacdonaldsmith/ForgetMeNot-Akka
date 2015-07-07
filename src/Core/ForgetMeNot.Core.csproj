@@ -79,13 +79,16 @@
     <Compile Include="Journaler\ExtensionMethods.cs" />
     <Compile Include="Journaler\ICommandFactory.cs" />
     <Compile Include="Journaler\IJournalEvents.cs" />
+    <Compile Include="Journaler\InMemoryJournaler.cs" />
     <Compile Include="Journaler\Journaler.cs" />
     <Compile Include="Journaler\PostgresCommandFactory.cs" />
     <Compile Include="Journaler\PostgresJournaler.cs" />
+    <Compile Include="Journaler\RxExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Schedule\Scheduler.cs" />
     <Compile Include="Startup\CancellationReplayer.cs" />
     <Compile Include="Startup\CurrentRemindersReplayer.cs" />
+    <Compile Include="Startup\IReplayEvents.cs" />
     <Compile Include="Startup\SystemStartManager.cs" />
     <Compile Include="Startup\UndeliveredRemindersReplayer.cs" />
     <Compile Include="Schedule\SchedulerMailbox.cs" />
@@ -108,9 +111,7 @@
       <Name>ForgetMeNot.Messages</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Startup\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Content Include="Schedule\HOCON.txt" />
   </ItemGroup>

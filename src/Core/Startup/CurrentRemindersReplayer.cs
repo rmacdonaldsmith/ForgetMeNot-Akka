@@ -2,6 +2,7 @@
 using System.Data;
 using System.Web.Script.Serialization;
 using ForgetMeNot.Common;
+using ForgetMeNot.Core.Journaler;
 using ForgetMeNot.Messages;
 using Npgsql;
 
