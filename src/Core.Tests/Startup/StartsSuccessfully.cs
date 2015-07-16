@@ -16,7 +16,7 @@ namespace ForgetMeNot.Core.Tests.Startup
         {
             var cancellationReplayer = new FakeReplayer(from => this.BuildCancelEventStream(5));
             var currentRemindersReplayer = new FakeReplayer(from => this.BuildCurrentReminderStream(5));
-            var startupManager = ActorOf(SystemStartManager.ActorProps(new List<IReplayEvents>{cancellationReplayer, currentRemindersReplayer}, TestActor));
+            var startupManager = ActorOf(SystemStartManager.ActorProps(new List<IReplayEvents> { cancellationReplayer, currentRemindersReplayer }, TestActor), "ShouldIssueInitCompletedMessage");
 
             startupManager.Tell(new SystemMessage.BeginInitialization());
 

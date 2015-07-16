@@ -30,6 +30,7 @@ namespace ForgetMeNot.Core.DeliverReminder
             Ensure.NotNull(deadletterDeliveryProps, "deadletterDeliveryProps");
 
 	        _journaler = journaler;
+            //todo: move these actor creations to PreStart.
             _httpDelivery = Context.ActorOf(httpDeliveryProps);
 	        _deadletterDelivery = Context.ActorOf(deadletterDeliveryProps);
 	    }

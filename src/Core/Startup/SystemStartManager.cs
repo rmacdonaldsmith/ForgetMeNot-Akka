@@ -15,24 +15,23 @@ namespace ForgetMeNot.Core.Startup
 	{
 		private readonly static ILog Logger = LogManager.GetLogger(typeof(SystemStartManager));
 		private readonly List<IReplayEvents> _replayers;
-	    private readonly IActorRef _bus;
+	    private readonly IActorRef _router;
 
-		public SystemStartManager (IEnumerable<IReplayEvents> replayers, IActorRef bus)
+		public SystemStartManager (IEnumerable<IReplayEvents> replayers, IActorRef router)
 		{
 // ReSharper disable PossibleMultipleEnumeration
 		    Ensure.NotNull (replayers, "replayers");
-
-            Ensure.NotNull(bus, "bus");
+            Ensure.NotNull(router, "router");
 
 			_replayers = new List<IReplayEvents> (replayers);
-            _bus = bus;
+            _router = router;
 // ReSharper restore PossibleMultipleEnumeration
 		}
 
 		public void Handle (SystemMessage.BeginInitialization init)
 		{
 			// Merge the observable sequences from all the replayers in to one stream
-			// Play that stream over the bus to initialize components
+			// Play that stream over the router to initialize components
 			// When all observable sequences have completed, then we send a message indicating that init is completed => start normal operation
 			// If any of the child observables error, then the merged observable will error => we will not publish the init completed message => the system will not start
 		    _replayers
@@ -40,7 +39,7 @@ namespace ForgetMeNot.Core.Startup
 		        .Merge()
 		        .Subscribe(
 		            Observer.Create<ReminderMessage.IReminder>(
-		                message => _bus.Tell(message),              // OnNext
+		                message => _router.Tell(message),              // OnNext
 		                error =>                                    // OnError
 		                {
 		                    const string msg = "There was an exception while replaying data in to the system";
@@ -48,7 +47,8 @@ namespace ForgetMeNot.Core.Startup
                             Sender.Tell(new SystemMessage.InitializationFailed(msg, error));
 		                },
 		                () =>                                       // OnCompleted
-		                    _bus.Tell(new SystemMessage.InitializationCompleted())));
+                            //Context.System.EventStream.Publish("hello")));
+		                    _router.Tell(new SystemMessage.InitializationCompleted())));
 		}
 
 	    public static Func<IEnumerable<IReplayEvents>, IActorRef, Props> ActorProps {
