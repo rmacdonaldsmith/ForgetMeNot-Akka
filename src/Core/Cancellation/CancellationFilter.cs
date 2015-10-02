@@ -4,7 +4,6 @@ using System.Linq;
 using Akka.Actor;
 using ForgetMeNot.Common;
 using ForgetMeNot.Messages;
-using log4net;
 
 namespace ForgetMeNot.Core.Cancellation
 {
@@ -13,27 +12,30 @@ namespace ForgetMeNot.Core.Cancellation
         IHandle<ReminderMessage.Due>
     {
         private readonly HashSet<ReminderMessage.Cancel> _cancellations;
-        private readonly IActorRef _innerHandler;
-        private readonly ILog Logger = LogManager.GetLogger(typeof(CancellationFilter));
+        private readonly IActorRef _deliveryRouter;
 
-        public CancellationFilter(IActorRef innerHandler)
+        public static Func<IActorRef, Props> ActorProps
+        {
+            get { return receiver => Props.Create(() => new CancellationFilter(receiver)); }
+        }
+
+        public CancellationFilter(IActorRef deliveryRouter)
         {
             var comparer = new ReminderMessage.EqualityComparer<ReminderMessage.Cancel>(
                                c => c.ReminderId.GetHashCode(),
                                (x, y) => x.ReminderId == y.ReminderId);
             _cancellations = new HashSet<ReminderMessage.Cancel>(comparer);
 
-            Ensure.NotNull(innerHandler, "innerHandler");
+            Ensure.NotNull(deliveryRouter, "deliveryRouter");
 
-            _innerHandler = innerHandler;
+            _deliveryRouter = deliveryRouter;
         }
 
         public void Handle(ReminderMessage.Cancel msg)
         {
-            if (_cancellations.Any(x => x.ReminderId == msg.ReminderId) == false)
+            if (_cancellations.All(x => x.ReminderId != msg.ReminderId))
             {
                 _cancellations.Add(msg);
-                Logger.Info(string.Format("Cancellation for reminder [{0}] added to cancellation list", msg.ReminderId));
             }
         }
 
@@ -42,17 +44,11 @@ namespace ForgetMeNot.Core.Cancellation
             var found = _cancellations.SingleOrDefault(x => x.ReminderId == due.ReminderId);
 
             if (found == null)
-                _innerHandler.Tell(due);
+                _deliveryRouter.Tell(due);
             else
             {
                 _cancellations.Remove(found);
-                Logger.Info(string.Format("Cancelled Reminder [{0}] found and removed from cancellation list", due.ReminderId));
             }
-        }
-
-        public static Func<IActorRef, Props> ActorProps 
-        {
-            get { return receiver => Props.Create(() => new CancellationFilter(receiver)); }
         }
     }
 }

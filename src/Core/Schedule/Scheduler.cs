@@ -33,15 +33,11 @@ namespace ForgetMeNot.Core.Schedule
                     while (!_pq.IsEmpty && _pq.Min().DueAt <= SystemTime.UtcNow())
                     {
                         var due = _pq.RemoveMin().AsDue();
-                        //Logger.DebugFormat("Timer fired. Dequeing reminder {0}", due.ReminderId);
                         _deliveryRouter.Tell(due);
                     }
                 });
 
             Receive<ReminderMessage.Schedule>(schedule => _pq.Insert(schedule));
-
-            //may not need this message type
-            Receive<DeliveryMessage.Rescheduled>(reschedule => _pq.Insert(reschedule));
 
             Receive<QueryMessage.HowBigIsYourQueue>(
                 query => Sender.Tell(new QueryMessage.HowBigIsYourQueueResponse(_pq.Size)));

@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ForgetMeNot.Messages", "src
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ForgetMeNot.API.HTTP", "src\API.HTTP\ForgetMeNot.API.HTTP.csproj", "{595454FF-7511-4E5B-A8C7-E72A17B8FCDA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bank", "Bank\Bank.csproj", "{E9AA8F7D-CA46-4D22-A5E1-119666BFF758}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -49,6 +51,10 @@ Global
 		{595454FF-7511-4E5B-A8C7-E72A17B8FCDA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{595454FF-7511-4E5B-A8C7-E72A17B8FCDA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{595454FF-7511-4E5B-A8C7-E72A17B8FCDA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E9AA8F7D-CA46-4D22-A5E1-119666BFF758}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E9AA8F7D-CA46-4D22-A5E1-119666BFF758}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E9AA8F7D-CA46-4D22-A5E1-119666BFF758}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E9AA8F7D-CA46-4D22-A5E1-119666BFF758}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
