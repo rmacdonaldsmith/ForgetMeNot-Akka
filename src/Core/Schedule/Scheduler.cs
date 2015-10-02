@@ -1,5 +1,6 @@
+﻿using Akka.Actor;
+using Akka.Event;
 ﻿using System;
-using Akka.Actor;
 using ForgetMeNot.Common;
 using ForgetMeNot.DataStructures;
 using ForgetMeNot.Messages;
@@ -33,6 +34,7 @@ namespace ForgetMeNot.Core.Schedule
                     while (!_pq.IsEmpty && _pq.Min().DueAt <= SystemTime.UtcNow())
                     {
                         var due = _pq.RemoveMin().AsDue();
+                        Context.GetLogger().Debug("Timer fired. Dequeing reminder {0}", due.ReminderId);
                         _deliveryRouter.Tell(due);
                     }
                 });

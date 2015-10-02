@@ -34,7 +34,7 @@ namespace ForgetMeNot.Core.Tests.Cancellation
             cancellationFilter.Tell(due);
 
             ExpectNoMsg();
-
+            
             //we should now be able to send the due reminder with this "cancelled" id again
             //it should have been removed from the list that the CancellationFilter maintains,
             //hence we can test that the list is being maintained

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data;
 using ForgetMeNot.Common;
+using ForgetMeNot.Core.Journaler;
 using ForgetMeNot.Messages;
 using Npgsql;
 

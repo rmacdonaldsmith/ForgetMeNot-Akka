@@ -4,9 +4,9 @@ using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using Akka.Actor;
+using Akka.Event;
 using ForgetMeNot.Common;
 using ForgetMeNot.Messages;
-using ForgetMeNot.Router;
 using log4net;
 
 namespace ForgetMeNot.Core.Startup
@@ -15,37 +15,45 @@ namespace ForgetMeNot.Core.Startup
 	{
 		private readonly static ILog Logger = LogManager.GetLogger(typeof(SystemStartManager));
 		private readonly List<IReplayEvents> _replayers;
+	    private readonly IActorRef _router;
 
-		public SystemStartManager (IEnumerable<IReplayEvents> replayers)
+		public SystemStartManager (IEnumerable<IReplayEvents> replayers, IActorRef router)
 		{
-			Ensure.NotNull (replayers, "replayers");
+// ReSharper disable PossibleMultipleEnumeration
+		    Ensure.NotNull (replayers, "replayers");
+            Ensure.NotNull(router, "router");
 
 			_replayers = new List<IReplayEvents> (replayers);
+            _router = router;
+// ReSharper restore PossibleMultipleEnumeration
 		}
 
 		public void Handle (SystemMessage.BeginInitialization init)
 		{
 			// Merge the observable sequences from all the replayers in to one stream
-			// Play that stream over the bus to initialize components
+			// Play that stream over the router to initialize components
 			// When all observable sequences have completed, then we send a message indicating that init is completed => start normal operation
 			// If any of the child observables error, then the merged observable will error => we will not publish the init completed message => the system will not start
-			Observable
-				.Merge (_replayers.Select (r => r.Replay<IMessage> (SystemTime.Now ())))
-				.Subscribe (
-				Observer.Create<IMessage> (
-					message => _bus.Send (message), 								// OnNext
-					error =>                                                        // OnError
-					    {
-					        var msg = "There was an exception while replaying data in to the system";
-					        Logger.Error(msg, error);
-					        throw new SystemInitializationException(msg, error);
-					    },
-					    () =>                                                       // OnCompleted
-					    {
-					        _bus.Send(new SystemMessage.InitializationCompleted());
-					    }	
-				));
+		    _replayers
+		        .Select(r => r.Replay<ReminderMessage.IReminder>(SystemTime.Now()))
+		        .Merge()
+		        .Subscribe(
+		            Observer.Create<ReminderMessage.IReminder>(
+		                message => _router.Tell(message),              // OnNext
+		                error =>                                    // OnError
+		                {
+		                    const string msg = "There was an exception while replaying data in to the system";
+                            Context.GetLogger().Error(msg, error);
+                            Sender.Tell(new SystemMessage.InitializationFailed(msg, error));
+		                },
+		                () =>                                       // OnCompleted
+                            //Context.System.EventStream.Publish("hello")));
+		                    _router.Tell(new SystemMessage.InitializationCompleted())));
 		}
+
+	    public static Func<IEnumerable<IReplayEvents>, IActorRef, Props> ActorProps {
+	        get { return (replayers, bus) => Props.Create(() => new SystemStartManager(replayers, bus)); }
+	    }
 	}
 }
 

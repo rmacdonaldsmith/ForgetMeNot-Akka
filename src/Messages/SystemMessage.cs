@@ -1,4 +1,6 @@
-﻿namespace ForgetMeNot.Messages
+﻿using System;
+
+namespace ForgetMeNot.Messages
 {
 	public static class SystemMessage
 	{
@@ -21,6 +23,18 @@
 		{
 			//empty!
 		}
+
+	    public class InitializationFailed
+	    {
+	        public string Message { get; private set; }
+	        public Exception Error { get; private set; }
+
+	        public InitializationFailed(string message, Exception error)
+	        {
+	            Message = message;
+	            Error = error;
+	        }
+	    }
 	}
 }
 

@@ -1,21 +1,22 @@
 ﻿using System;
 using System.Data;
 using ForgetMeNot.Common;
+using ForgetMeNot.Core.Journaler;
 using ForgetMeNot.Messages;
 using Npgsql;
 
-namespace ForgetMeNot.Core.Postgres
+namespace ForgetMeNot.Core.Startup
 {
 	public class UndeliveredRemindersReplayer : IReplayEvents
 	{
 		private readonly ICommandFactory _commandFactory;
-		private readonly Func<IDataReader, ReminderMessage.Undelivered> _undeliveredMapper;
+        private readonly Func<IDataReader, DeliveryMessage.NotDelivered> _undeliveredMapper;
 		private readonly string _connectionString;
 
 		public UndeliveredRemindersReplayer (
 			ICommandFactory commandFactory, 
 			string connectionString,
-			Func<IDataReader, ReminderMessage.Undelivered> undeliveredMapper = null)
+            Func<IDataReader, DeliveryMessage.NotDelivered> undeliveredMapper = null)
 		{
 			Ensure.NotNull (commandFactory, "commandFactory");
 			Ensure.NotNullOrEmpty (connectionString, "connectionString");
@@ -37,11 +38,12 @@ namespace ForgetMeNot.Core.Postgres
 			return (IObservable<T>)command.ExecuteAsObservable (connection, _undeliveredMapper);
 		}
 
-		public static Func<IDataReader, ReminderMessage.Undelivered> UndeliveredMapper {
+        public static Func<IDataReader, DeliveryMessage.NotDelivered> UndeliveredMapper
+        {
 			get {
-				return (reader) => {
+				return reader => {
 					var journaledReminder = CurrentRemindersReplayer.ScheduleMap (reader);
-					return new ReminderMessage.Undelivered (journaledReminder.Message, reader.Get<string> ("undelivered_reason"));
+                    return new DeliveryMessage.NotDelivered(journaledReminder.Message, reader.Get<string>("undelivered_reason"));
 				};
 			}
 		}

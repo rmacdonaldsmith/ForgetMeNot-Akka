@@ -1,4 +1,5 @@
-﻿using Akka.Actor;
+﻿using System;
+using Akka.Actor;
 using ForgetMeNot.Common;
 using ForgetMeNot.Messages;
 using log4net;
@@ -16,6 +17,11 @@ namespace ForgetMeNot.Core.DeliverReminder
 		        "Reminder [{0}] was undelivereable. This log message is a stand-in for the dead-letter queue until that queue is setup.",
 		        undeliverable.ReminderId);
 		}
+
+        public static Func<Props> PropsFactory
+        {
+            get { return () => Props.Create(() => new DeadLetterDelivery()); }
+        }
 	} 
 }
 

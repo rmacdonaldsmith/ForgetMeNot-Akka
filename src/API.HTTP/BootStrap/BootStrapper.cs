@@ -1,14 +1,25 @@
-﻿using Akka.Actor;
+﻿using System;
+using System.Configuration;
+using System.Dynamic;
+using System.Security.Cryptography.X509Certificates;
+using Akka.Actor;
 using Akka.DI.CastleWindsor;
+using Akka.DI.Core;
 using Castle.MicroKernel.Registration;
 using ForgetMeNot.API.HTTP.CustomSerializers;
 using ForgetMeNot.Common;
+using ForgetMeNot.Core.Cancellation;
+using ForgetMeNot.Core.DeliverReminder;
+using ForgetMeNot.Core.Journaler;
+using ForgetMeNot.Core.Schedule;
+using ForgetMeNot.Core.Startup;
 using ForgetMeNot.Messages;
 using Nancy.Bootstrappers.Windsor;
 using log4net;
 using Nancy;
 using Newtonsoft.Json;
 using OpenTable.Services.Components.Monitoring.Monitors.HitTracker;
+using RestSharp;
 
 namespace ForgetMeNot.API.HTTP.BootStrap
 {
@@ -39,6 +50,8 @@ namespace ForgetMeNot.API.HTTP.BootStrap
 			//hmmm, not sure what i can do with this
 			var propsResolver = new WindsorDependencyResolver(existingContainer, system);
 			existingContainer.Register(Component.For<ActorSystem>().Instance(system));
+			existingContainer.Install(new NancyApiInstaller());
+			existingContainer.Install(new ActorSystemInstaller());
 
 			Logger.Info("Done configuring the Nancy Http API");
 		}
