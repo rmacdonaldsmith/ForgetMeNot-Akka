@@ -1,4 +1,5 @@
-﻿using Akka.Actor;
+﻿using System;
+using Akka.Actor;
 using ForgetMeNot.Common;
 using ForgetMeNot.Messages;
 
@@ -11,15 +12,12 @@ namespace ForgetMeNot.Core.Journaler
                              IHandle<DeliveryMessage.Undeliverable>
     {
         private readonly IJournalEvents _journaler;
-        private readonly IActorRef _scheduler;
 
-        public Journaler(IJournalEvents journaler, IActorRef scheduler)
+        public Journaler(IJournalEvents journaler)
         {
             Ensure.NotNull(journaler, "journaler");
-            Ensure.NotNull(scheduler, "scheduler");
 
             _journaler = journaler;
-            _scheduler = scheduler;
         }
 
         public void Handle(ReminderMessage.Schedule message)
@@ -42,10 +40,36 @@ namespace ForgetMeNot.Core.Journaler
             WriteToJournal(message);
         }
 
-        private void WriteToJournal(object message)
+        private void WriteToJournal<T>(T message)
         {
-            _journaler.Write(message);
-            _scheduler.Tell(message);
+            try
+            {
+                _journaler.Write(message);
+                Sender.Tell(new Messages.Journalled<T>(message), Self);
+            }
+            catch (Exception e)
+            {
+                Sender.Tell(new Failure {Exception = e}, Self);
+                throw;
+            }
+        }
+
+        public static Func<IJournalEvents, Props> PropsFactory
+        {
+            get { return ijournalevents => Props.Create(() => new Journaler(ijournalevents)); }
+        }
+
+        public class Messages
+        {
+            public class Journalled<T>
+            {
+                public Journalled(T message)
+                {
+                    Message = message;
+                }
+
+                public T Message { get; private set; }
+            }
         }
     }
 }

@@ -85,6 +85,7 @@
   <ItemGroup>
     <Compile Include="Cancellation\WhenCancelled.cs" />
     <Compile Include="DeliverReminder\ReDelivery.cs" />
+    <Compile Include="Journaler\JournalerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SchedulerTests\WhenRemindersBecomeDue.cs" />
     <Compile Include="SchedulerTests\WhenStarting.cs" />

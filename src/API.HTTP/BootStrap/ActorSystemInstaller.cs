@@ -18,6 +18,11 @@ namespace ForgetMeNot.API.HTTP.BootStrap
     {
         public void Install(IWindsorContainer container, IConfigurationStore store)
         {
+            var system = ActorSystem.Create("forgetmenot-system");
+            container.Register(Component.For<ActorSystem>().Instance(system));
+            var propsResolver = new WindsorDependencyResolver(container, system);
+            system.AddDependencyResolver(propsResolver);
+
             container.Register(Component.For<IRestClient>().ImplementedBy<RestClient>().LifestyleSingleton());
 
             var connectionString = ConfigurationManager.ConnectionStrings["postgres"].ConnectionString;
@@ -25,44 +30,44 @@ namespace ForgetMeNot.API.HTTP.BootStrap
             container.Register(Component.For<IJournalEvents>().Instance(journaler).LifestyleSingleton());
 
             //actor registrations
-            container.Register(Component.For<Journaler>().Named("Journaler").LifestyleTransient());
+            var journalerRef = system.ActorOf(Journaler.PropsFactory(container.Resolve<IJournalEvents>()));
+            container.Register(Component.For<IActorRef>().Named("Journaler").Instance(journalerRef).LifestyleTransient());
+
+            var deliveryRouterRef = system.ActorOf(
+                DeliveryRouter.PropsFactory(journalerRef,
+                                            HttpDelivery.PropsFactory(container.Resolve<IRestClient>()),
+                                            DeadLetterDelivery.PropsFactory()));
+            container.Register(
+                Component.For<IActorRef>().Instance(deliveryRouterRef)
+                         .Named("DeliveryRouter")
+                         .LifestyleTransient());
+
+            var schedulerRef = system.ActorOf(Scheduler.ActorProps(10000, deliveryRouterRef));
+            container.Register(
+                Component.For<IActorRef>()
+                         .Named("Scheduler")
+                         .Instance(schedulerRef)
+                         .LifestyleTransient());
+
 
             container.Register(Component.For<IReplayEvents>().ImplementedBy<CancellationReplayer>().LifestyleSingleton());
             container.Register(Component.For<IReplayEvents>().ImplementedBy<CurrentRemindersReplayer>().LifestyleSingleton());
             container.Register(Component.For<IReplayEvents>().ImplementedBy<UndeliveredRemindersReplayer>().LifestyleSingleton());
             container.Register(Component.For<SystemStartManager>().Named("SystemStartManager").LifestyleTransient());
 
-            container.Register(
-                Component.For<Scheduler>()
-                    .Named("Scheduler")
-                    .DependsOn(Dependency.OnValue<int>(10000))
-                    .LifestyleTransient());
-
             container.Register(Component.For<CancellationFilter>().Named("CancellationFilter").LifestyleTransient());
 
-            container.Register(
-                Component.For<Props>()
-                    .UsingFactoryMethod(() => HttpDelivery.PropsFactory(container.Resolve<IRestClient>()))
-                    .Named("HttpDelivery")
-                    .LifestyleTransient());
-
-            container.Register(
-                Component.For<Props>()
-                    .UsingFactoryMethod(() => DeadLetterDelivery.PropsFactory())
-                    .Named("DeadLetterDelivery")
-                    .LifestyleTransient());
-
-            container.Register(
-                Component.For<DeliveryRouter>()
-                .DependsOn(ServiceOverride.ForKey<Props>().Eq("HttpDelivery"))
-                .DependsOn(ServiceOverride.ForKey<Props>().Eq("DeadLetterDelivery"))
-                .Named("DeliveryRouter")
-                .LifestyleTransient());
-
-            var system = ActorSystem.Create("forgetmenot-system");
-            container.Register(Component.For<ActorSystem>().Instance(system));
-            var propsResolver = new WindsorDependencyResolver(container, system);
-            system.AddDependencyResolver(propsResolver);
+//            container.Register(
+//                Component.For<Props>()
+//                    .UsingFactoryMethod(() => HttpDelivery.PropsFactory(container.Resolve<IRestClient>()))
+//                    .Named("HttpDelivery")
+//                    .LifestyleTransient());
+//
+//            container.Register(
+//                Component.For<Props>()
+//                    .UsingFactoryMethod(() => DeadLetterDelivery.PropsFactory())
+//                    .Named("DeadLetterDelivery")
+//                    .LifestyleTransient());
         }
     }
 }
