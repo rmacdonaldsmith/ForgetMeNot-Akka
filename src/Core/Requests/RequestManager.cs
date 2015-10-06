@@ -1,4 +1,5 @@
-﻿using Akka.Actor;
+﻿using System;
+using Akka.Actor;
 using ForgetMeNot.Messages;
 using Journal = ForgetMeNot.Core.Journaler.Journaler;
 
@@ -29,6 +30,18 @@ namespace ForgetMeNot.Core.Requests
                 });
 
             Receive<ReminderMessage.Cancel>(cancel => _cancellationFilter.Tell(cancel));
+
+            Receive<SystemMessage.ShutDown>(stop => UnbecomeStacked());
+        }
+
+        public static Func<IActorRef, IActorRef, IActorRef, Props> PropsFactory
+        {
+            get
+            {
+                return
+                    (journaler, scheduler, cancellation) =>
+                    Props.Create(() => new RequestManager(journaler, scheduler, cancellation));
+            }
         }
     }
 }
