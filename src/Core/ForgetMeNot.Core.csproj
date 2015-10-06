@@ -90,6 +90,7 @@
     <Compile Include="Journaler\PostgresJournaler.cs" />
     <Compile Include="Journaler\RxExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Requests\RequestManager.cs" />
     <Compile Include="Schedule\Scheduler.cs" />
     <Compile Include="Startup\CancellationReplayer.cs" />
     <Compile Include="Startup\CurrentRemindersReplayer.cs" />

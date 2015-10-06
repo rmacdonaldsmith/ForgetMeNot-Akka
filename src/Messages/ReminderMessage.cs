@@ -72,6 +72,10 @@ namespace ForgetMeNot.Messages
 			}
 		}
 
+		public class Scheduled
+		{
+		}
+
 		public class Due : IReminder
 		{
 			public Guid ReminderId { get; set; }

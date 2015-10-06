@@ -21,10 +21,10 @@ namespace ForgetMeNot.Core.Tests.Journaler
                     var reminderId = Guid.NewGuid();
 
                     await
-                        journaler.Ask<JournalerActor.Messages.Journalled<ReminderMessage.Cancel>>(
+                        journaler.Ask<JournalerActor.Messages.Journaled<ReminderMessage.Cancel>>(
                             new ReminderMessage.Cancel(reminderId));
 
-                    ExpectMsg<JournalerActor.Messages.Journalled<ReminderMessage.Cancel>>(
+                    ExpectMsg<JournalerActor.Messages.Journaled<ReminderMessage.Cancel>>(
                         journaled => journaled.Message.ReminderId == reminderId);
                 });
         }
@@ -39,7 +39,7 @@ namespace ForgetMeNot.Core.Tests.Journaler
                 var reminderId = Guid.NewGuid();
 
                 await
-                    journaler.Ask<JournalerActor.Messages.Journalled<ReminderMessage.Cancel>>(
+                    journaler.Ask<JournalerActor.Messages.Journaled<ReminderMessage.Cancel>>(
                         new ReminderMessage.Cancel(reminderId));
 
                 ExpectMsg<Failure>();

@@ -45,7 +45,7 @@ namespace ForgetMeNot.Core.Journaler
             try
             {
                 _journaler.Write(message);
-                Sender.Tell(new Messages.Journalled<T>(message), Self);
+                Sender.Tell(new Messages.Journaled<T>(message), Self);
             }
             catch (Exception e)
             {
@@ -61,9 +61,9 @@ namespace ForgetMeNot.Core.Journaler
 
         public class Messages
         {
-            public class Journalled<T>
+            public class Journaled<T>
             {
-                public Journalled(T message)
+                public Journaled(T message)
                 {
                     Message = message;
                 }
